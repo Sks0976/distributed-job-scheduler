@@ -1,11 +1,11 @@
-# Distributed Job Scheduler
+﻿# Distributed Job Scheduler
 
 A fault-tolerant job scheduler in **Java 21 + Spring Boot 3**, where any number of worker nodes share
 one **PostgreSQL** queue with no leader and no external broker. It supports delayed, prioritized and
 recurring (cron) jobs, automatic retries with exponential backoff, per-job timeouts, idempotent
 submission, and recovery of work from crashed nodes.
 
-![CI](https://github.com/YOUR_GITHUB_USERNAME/distributed-job-scheduler/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/Sks0976/distributed-job-scheduler/actions/workflows/ci.yml/badge.svg)
 
 ## Architecture
 
