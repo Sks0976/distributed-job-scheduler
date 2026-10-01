@@ -1,0 +1,58 @@
+# Three scheduler nodes sharing one PostgreSQL. Try: docker compose kill scheduler-2
+# while jobs are running and watch the other nodes recover its work.
+
+x-scheduler: &scheduler
+  build: .
+  image: distributed-job-scheduler:latest
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+x-db-env: &db-env
+  DB_URL: jdbc:postgresql://postgres:5432/scheduler
+  DB_USER: scheduler
+  DB_PASSWORD: scheduler
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: scheduler
+      POSTGRES_USER: scheduler
+      POSTGRES_PASSWORD: scheduler
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scheduler -d scheduler"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  scheduler-1:
+    <<: *scheduler
+    environment:
+      <<: *db-env
+      NODE_ID: node-1
+    ports:
+      - "8081:8080"
+
+  scheduler-2:
+    <<: *scheduler
+    environment:
+      <<: *db-env
+      NODE_ID: node-2
+    ports:
+      - "8082:8080"
+
+  scheduler-3:
+    <<: *scheduler
+    environment:
+      <<: *db-env
+      NODE_ID: node-3
+    ports:
+      - "8083:8080"
+
+volumes:
+  pgdata:
